@@ -2,6 +2,7 @@ import os
 
 from flask import Flask
 
+from .api import init_api
 from .db import init_db
 
 
@@ -20,6 +21,7 @@ def init_app(config: str) -> Flask:
     except (FileNotFoundError, SyntaxError) as e:
         raise AppError(e)
 
+    init_api(app)
     init_db(app)
 
     return app

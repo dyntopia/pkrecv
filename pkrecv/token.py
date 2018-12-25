@@ -2,6 +2,7 @@ import binascii
 import datetime
 import hashlib
 import os
+from typing import Any
 
 from sqlalchemy import DateTime, Integer, String
 from sqlalchemy.orm import validates
@@ -32,6 +33,16 @@ class Token(db.Model):  # type: ignore
         return role
 
 
+def get_token(**filters: Any) -> Token:
+    """
+    Retrieve a token.
+    """
+    token = filters.get("token")
+    if token:
+        filters["token"] = sha256(bytes(token, "utf-8"))
+    return Token.query.filter_by(**filters).first()
+
+
 def add_token(role: str, description: str) -> str:
     """
     Add a token to the database.
@@ -39,7 +50,7 @@ def add_token(role: str, description: str) -> str:
     token = generate_token(32)
 
     db.session.add(Token(
-        token=hashlib.sha256(token).hexdigest(),
+        token=sha256(token),
         role=role,
         description=description
     ))
@@ -54,3 +65,7 @@ def generate_token(size: int) -> bytes:
     """
     data = os.urandom(size)
     return binascii.hexlify(data)
+
+
+def sha256(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
