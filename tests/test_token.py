@@ -8,6 +8,7 @@ from pkrecv.token import (
     add_token,
     generate_token,
     get_token,
+    get_tokens,
     sha256
 )
 
@@ -63,6 +64,14 @@ class GetTokenTest(FlaskTestCase):
         self.assertEqual(second.token, sha256(bytes(self.second, "ascii")))
         self.assertEqual(second.role, "server")
         self.assertEqual(second.description, "desc2")
+
+
+class GetTokensTest(FlaskTestCase):
+    def test_len(self) -> None:
+        for _ in range(10):
+            add_token("admin", "asdf")
+
+        self.assertEqual(len(get_tokens()), 10)
 
 
 class GenerateTokenTest(TestCase):

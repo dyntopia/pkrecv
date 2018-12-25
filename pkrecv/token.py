@@ -2,7 +2,7 @@ import binascii
 import datetime
 import hashlib
 import os
-from typing import Any
+from typing import Any, List
 
 from sqlalchemy import DateTime, Integer, String
 from sqlalchemy.orm import validates
@@ -41,6 +41,10 @@ def get_token(**filters: Any) -> Token:
     if token:
         filters["token"] = sha256(bytes(token, "utf-8"))
     return Token.query.filter_by(**filters).first()
+
+
+def get_tokens() -> List[Token]:
+    return Token.query.all()
 
 
 def add_token(role: str, description: str) -> str:
