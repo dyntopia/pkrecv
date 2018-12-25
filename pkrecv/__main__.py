@@ -24,6 +24,12 @@ def add_token(role: str, description: str) -> None:
     print("Token: {}".format(t))
 
 
+@cli.command()
+@click.pass_context
+def serve(ctx: click.Context) -> None:
+    ctx.obj["app"].run()
+
+
 def main() -> int:
     cli(obj={})  # pylint: disable=E1120,E1123
     return 0
