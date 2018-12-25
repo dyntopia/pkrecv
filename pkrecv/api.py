@@ -6,12 +6,26 @@ from flask_httpauth import HTTPTokenAuth
 from flask_restful import Api, Resource, reqparse
 
 from .rbac import role_required
-from .token import TokenError, add_token, get_token
+from .token import TokenError, add_token, get_token, get_tokens
 
 auth = HTTPTokenAuth()
 
 
 class Token(Resource):  # type: ignore
+    @staticmethod
+    @auth.login_required
+    @role_required("admin")
+    def get() -> Union[Dict, Response]:
+        """
+        Retrieve a list of token IDs, roles and descriptions.
+        """
+        return {
+            "tokens": [
+                {"id": t.id, "role": t.role, "description": t.description}
+                for t in get_tokens()
+            ]
+        }
+
     @staticmethod
     @auth.login_required
     @role_required("admin")
