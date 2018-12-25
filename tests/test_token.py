@@ -3,22 +3,12 @@ import re
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from flask import Flask
-
-from pkrecv.db import db
 from pkrecv.token import Token, TokenError, add_token, generate_token
 
+from .helpers import FlaskTestCase
 
-class AddTokenTest(TestCase):
-    def setUp(self) -> None:
-        self.app = Flask(__name__)
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
-        self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-        self.app.app_context().push()
 
-        db.init_app(self.app)
-        db.create_all()
-
+class AddTokenTest(FlaskTestCase):
     @patch("pkrecv.token.generate_token")  # type: ignore
     def test_sha256(self, mock: MagicMock) -> None:
         data = b"abcd"

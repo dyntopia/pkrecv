@@ -1,25 +1,11 @@
 import json
-import tempfile
-from unittest import TestCase
 
-from pkrecv.app import init_app
 from pkrecv.token import add_token
 
+from .helpers import FlaskTestCase
 
-class TokenPostTest(TestCase):
-    def setUp(self) -> None:
-        self.config = tempfile.NamedTemporaryFile()
-        self.config.write(b"SQLALCHEMY_DATABASE_URI = 'sqlite:///'\n")
-        self.config.write(b"SQLALCHEMY_TRACK_MODIFICATIONS = False\n")
-        self.config.flush()
 
-        self.app = init_app(self.config.name)
-        self.app.testing = True
-        self.client = self.app.test_client()
-
-    def tearDown(self) -> None:
-        self.config.close()
-
+class TokenPostTest(FlaskTestCase):
     def test_unauthenticated(self) -> None:
         res = self.client.post("/api/v1/token")
         self.assertEqual(res.data, b"Unauthorized Access")
