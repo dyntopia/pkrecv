@@ -20,7 +20,11 @@ def cli(ctx: click.Context, config: str) -> None:
 @click.option("--role", required=True)
 @click.option("--description")
 def add_token(role: str, description: str) -> None:
-    t = token.add_token(role, description)
+    try:
+        t = token.add_token(role, description)
+    except token.TokenError as e:
+        sys.stderr.write("ERROR: {}\n".format(e))
+        sys.exit(1)
     print("Token: {}".format(t))
 
 

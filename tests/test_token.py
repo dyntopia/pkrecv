@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 from flask import Flask
 
 from pkrecv.db import db
-from pkrecv.token import Token, add_token, generate_token
+from pkrecv.token import Token, TokenError, add_token, generate_token
 
 
 class AddTokenTest(TestCase):
@@ -25,10 +25,14 @@ class AddTokenTest(TestCase):
         sha256 = hashlib.sha256(data).hexdigest()
 
         mock.return_value = data
-        add_token("", "")
+        add_token("admin", "")
 
         tokens = Token.query.filter_by(token=sha256).all()
         self.assertEqual(len(tokens), 1)
+
+    def test_invalid_role(self) -> None:
+        with self.assertRaises(TokenError):
+            add_token("abcd", "")
 
 
 class GenerateTokenTest(TestCase):
