@@ -3,6 +3,7 @@ import sqlite3
 
 from typing import Any
 
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, event
 from sqlalchemy.engine import Engine
@@ -24,3 +25,11 @@ def set_sqlite3_pragma(dbapi_connection: Any, _: _ConnectionRecord) -> None:
         cursor = dbapi_connection.cursor()
         cursor.execute("PRAGMA foreign_keys=ON")
         cursor.close()  # type: ignore
+
+
+def init_db(app: Flask) -> None:
+    """
+    Initialize the database.
+    """
+    db.init_app(app)
+    db.create_all()

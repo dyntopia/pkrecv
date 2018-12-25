@@ -2,7 +2,7 @@ import os
 
 from flask import Flask
 
-from .db import db
+from .db import init_db
 
 
 class AppError(Exception):
@@ -11,7 +11,7 @@ class AppError(Exception):
 
 def init_app(config: str) -> Flask:
     """
-    Initialize flask and the database.
+    Initialize flask.
     """
     app = Flask(__name__)
     app.app_context().push()
@@ -20,7 +20,6 @@ def init_app(config: str) -> Flask:
     except (FileNotFoundError, SyntaxError) as e:
         raise AppError(e)
 
-    db.init_app(app)
-    db.create_all()
+    init_db(app)
 
     return app
