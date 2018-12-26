@@ -7,14 +7,14 @@ from typing import Any, List
 from sqlalchemy import DateTime, Integer, String
 from sqlalchemy.orm import validates
 
-from .db import column, db
+from .db import Model, column, db
 
 
 class TokenError(Exception):
     pass
 
 
-class Token(db.Model):  # type: ignore
+class Token(Model):
     roles = [
         "admin",
         "server"
@@ -40,7 +40,7 @@ def get_tokens(**filters: Any) -> List[Token]:
     token = filters.get("token")
     if token:
         filters["token"] = sha256(bytes(token, "utf-8"))
-    return Token.query.filter_by(**filters).all()
+    return [t.as_dict for t in Token.query.filter_by(**filters).all()]
 
 
 def add_token(role: str, description: str) -> str:

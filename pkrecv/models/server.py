@@ -3,14 +3,14 @@ from typing import Any, List
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String
 
-from .db import column, db
+from .db import Model, column, db
 
 
 class ServerError(Exception):
     pass
 
 
-class Server(db.Model):  # type: ignore
+class Server(Model):
     id = column(Integer, primary_key=True)
     ip = column(String(45))  # http://www.ipuptime.net/ipv4mapped.aspx
     port = column(Integer, default=22)
@@ -24,7 +24,7 @@ def get_servers(**filters: Any) -> List[Server]:
     """
     Retrieve a list of servers.
     """
-    return Server.query.filter_by(**filters).all()
+    return [s.as_dict for s in Server.query.filter_by(**filters).all()]
 
 
 def add_server(ip: str, port: int, public_key: str, token_id: int) -> None:

@@ -16,12 +16,7 @@ class Token(Resource):  # type: ignore
         """
         Retrieve a list of token IDs, roles and descriptions.
         """
-        return {
-            "tokens": [
-                {"id": t.id, "role": t.role, "description": t.description}
-                for t in get_tokens()
-            ]
-        }
+        return {"tokens": get_tokens()}
 
     @staticmethod
     @login_required
