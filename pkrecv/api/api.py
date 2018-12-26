@@ -1,14 +1,12 @@
 import json
 from typing import Dict, Union
 
-from flask import Flask, Response, g
-from flask_httpauth import HTTPTokenAuth
+from flask import Flask, Response
 from flask_restful import Api, Resource, reqparse
 
-from ..models.token import TokenError, add_token, get_token, get_tokens
+from ..models.token import TokenError, add_token, get_tokens
+from .auth import auth
 from .rbac import role_required
-
-auth = HTTPTokenAuth()
 
 
 class Token(Resource):  # type: ignore
@@ -47,18 +45,6 @@ class Token(Resource):  # type: ignore
                 content_type="application/json"
             )
         return {"token": token}
-
-
-@auth.verify_token
-def verify_token(token: str) -> bool:
-    """
-    Authenticate a token.
-    """
-    t = get_token(token=token)
-    if t:
-        g.role = t.role
-        return True
-    return False
 
 
 def init_api(app: Flask) -> None:
