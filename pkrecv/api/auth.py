@@ -8,6 +8,7 @@ from flask_httpauth import HTTPTokenAuth
 from ..models.token import get_token
 
 auth = HTTPTokenAuth()
+login_required = auth.login_required
 
 
 def role_required(role: str) -> Callable:
