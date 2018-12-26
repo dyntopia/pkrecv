@@ -20,18 +20,11 @@ class Server(db.Model):  # type: ignore
     token_id = column(Integer, ForeignKey("token.id"))
 
 
-def get_servers() -> List[Server]:
+def get_servers(**filters: Any) -> List[Server]:
     """
     Retrieve a list of servers.
     """
-    return Server.query.all()
-
-
-def get_server(**filters: Any) -> Server:
-    """
-    Retrieve a server.
-    """
-    return Server.query.filter_by(**filters).first()
+    return Server.query.filter_by(**filters).all()
 
 
 def add_server(ip: str, port: int, public_key: str, token_id: int) -> None:
