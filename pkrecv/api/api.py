@@ -5,8 +5,7 @@ from flask import Flask, Response
 from flask_restful import Api, Resource, reqparse
 
 from ..models.token import TokenError, add_token, get_tokens
-from .auth import auth
-from .rbac import role_required
+from .auth import auth, role_required
 
 
 class Token(Resource):  # type: ignore
