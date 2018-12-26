@@ -1,15 +1,15 @@
 from unittest import TestCase
 
-from pkrecv.server import (
+from pkrecv.models.server import (
     ServerError,
     add_server,
     get_key_type,
     get_server,
     get_servers
 )
-from pkrecv.token import add_token
+from pkrecv.models.token import add_token
 
-from .helpers import FlaskTestCase
+from ..helpers import FlaskTestCase
 
 
 class AddServerTest(FlaskTestCase):

@@ -2,7 +2,7 @@ import tempfile
 from unittest import TestCase
 
 from pkrecv.app import init_app
-from pkrecv.db import db
+from pkrecv.models.db import db
 
 
 class FlaskTestCase(TestCase):

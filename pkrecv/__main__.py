@@ -2,7 +2,8 @@ import sys
 
 import click
 
-from . import app, token
+from . import app
+from .models import token
 
 
 @click.group()

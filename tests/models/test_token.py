@@ -2,7 +2,7 @@ import re
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from pkrecv.token import (
+from pkrecv.models.token import (
     Token,
     TokenError,
     add_token,
@@ -12,11 +12,11 @@ from pkrecv.token import (
     sha256
 )
 
-from .helpers import FlaskTestCase
+from ..helpers import FlaskTestCase
 
 
 class AddTokenTest(FlaskTestCase):
-    @patch("pkrecv.token.generate_token")  # type: ignore
+    @patch("pkrecv.models.token.generate_token")  # type: ignore
     def test_sha256(self, mock: MagicMock) -> None:
         data = b"abcd"
         sha256sum = sha256(data)

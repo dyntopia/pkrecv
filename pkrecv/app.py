@@ -2,8 +2,8 @@ import os
 
 from flask import Flask
 
-from .api import init_api
-from .db import init_db
+from .api.api import init_api
+from .models.db import init_db
 
 
 class AppError(Exception):

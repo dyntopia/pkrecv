@@ -5,8 +5,8 @@ from flask import Flask, Response, g
 from flask_httpauth import HTTPTokenAuth
 from flask_restful import Api, Resource, reqparse
 
+from ..models.token import TokenError, add_token, get_token, get_tokens
 from .rbac import role_required
-from .token import TokenError, add_token, get_token, get_tokens
 
 auth = HTTPTokenAuth()
 

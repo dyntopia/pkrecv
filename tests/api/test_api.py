@@ -1,8 +1,8 @@
 import json
 
-from pkrecv.token import add_token
+from pkrecv.models.token import add_token
 
-from .helpers import FlaskTestCase
+from ..helpers import FlaskTestCase
 
 
 class TokenGetTest(FlaskTestCase):
