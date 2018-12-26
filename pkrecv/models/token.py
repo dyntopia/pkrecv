@@ -33,18 +33,14 @@ class Token(db.Model):  # type: ignore
         return role
 
 
-def get_token(**filters: Any) -> Token:
+def get_tokens(**filters: Any) -> List[Token]:
     """
-    Retrieve a token.
+    Retrieve a list of tokens.
     """
     token = filters.get("token")
     if token:
         filters["token"] = sha256(bytes(token, "utf-8"))
-    return Token.query.filter_by(**filters).first()
-
-
-def get_tokens() -> List[Token]:
-    return Token.query.all()
+    return Token.query.filter_by(**filters).all()
 
 
 def add_token(role: str, description: str) -> str:

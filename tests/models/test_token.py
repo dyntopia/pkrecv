@@ -7,7 +7,6 @@ from pkrecv.models.token import (
     TokenError,
     add_token,
     generate_token,
-    get_token,
     get_tokens,
     sha256
 )
@@ -32,7 +31,7 @@ class AddTokenTest(FlaskTestCase):
             add_token("abcd", "")
 
 
-class GetTokenTest(FlaskTestCase):
+class GetTokensTest(FlaskTestCase):
     def setUp(self) -> None:
         super().setUp()
 
@@ -40,38 +39,42 @@ class GetTokenTest(FlaskTestCase):
         self.second = add_token("server", "desc2")
 
     def test_id(self) -> None:
-        first = get_token(id=1)
-        self.assertEqual(first.id, 1)
-        self.assertEqual(first.token, sha256(bytes(self.first, "ascii")))
-        self.assertEqual(first.role, "admin")
-        self.assertEqual(first.description, "desc1")
+        first = get_tokens(id=1)
+        self.assertEqual(len(first), 1)
+        self.assertEqual(first[0].id, 1)
+        self.assertEqual(first[0].token, sha256(bytes(self.first, "ascii")))
+        self.assertEqual(first[0].role, "admin")
+        self.assertEqual(first[0].description, "desc1")
 
-        second = get_token(id=2)
-        self.assertEqual(second.id, 2)
-        self.assertEqual(second.token, sha256(bytes(self.second, "ascii")))
-        self.assertEqual(second.role, "server")
-        self.assertEqual(second.description, "desc2")
+        second = get_tokens(id=2)
+        self.assertEqual(len(second), 1)
+        self.assertEqual(second[0].id, 2)
+        self.assertEqual(second[0].token, sha256(bytes(self.second, "ascii")))
+        self.assertEqual(second[0].role, "server")
+        self.assertEqual(second[0].description, "desc2")
 
     def test_token(self) -> None:
-        first = get_token(token=self.first)
-        self.assertEqual(first.id, 1)
-        self.assertEqual(first.token, sha256(bytes(self.first, "ascii")))
-        self.assertEqual(first.role, "admin")
-        self.assertEqual(first.description, "desc1")
+        first = get_tokens(token=self.first)
+        self.assertEqual(len(first), 1)
+        self.assertEqual(first[0].id, 1)
+        self.assertEqual(first[0].token, sha256(bytes(self.first, "ascii")))
+        self.assertEqual(first[0].role, "admin")
+        self.assertEqual(first[0].description, "desc1")
 
-        second = get_token(token=self.second)
-        self.assertEqual(second.id, 2)
-        self.assertEqual(second.token, sha256(bytes(self.second, "ascii")))
-        self.assertEqual(second.role, "server")
-        self.assertEqual(second.description, "desc2")
+        second = get_tokens(token=self.second)
+        self.assertEqual(len(second), 1)
+        self.assertEqual(second[0].id, 2)
+        self.assertEqual(second[0].token, sha256(bytes(self.second, "ascii")))
+        self.assertEqual(second[0].role, "server")
+        self.assertEqual(second[0].description, "desc2")
 
-
-class GetTokensTest(FlaskTestCase):
     def test_len(self) -> None:
+        self.assertEqual(len(get_tokens()), 2)
+
         for _ in range(10):
             add_token("admin", "asdf")
 
-        self.assertEqual(len(get_tokens()), 10)
+        self.assertEqual(len(get_tokens()), 12)
 
 
 class GenerateTokenTest(TestCase):

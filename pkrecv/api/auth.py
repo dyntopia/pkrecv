@@ -5,7 +5,7 @@ from typing import Any, Callable, Dict, Union
 from flask import Response, g
 from flask_httpauth import HTTPTokenAuth
 
-from ..models.token import get_token
+from ..models.token import get_tokens
 
 auth = HTTPTokenAuth()
 login_required = auth.login_required
@@ -34,8 +34,8 @@ def verify_token(token: str) -> bool:
     """
     Authenticate a token.
     """
-    t = get_token(token=token)
-    if t:
-        g.role = t.role
+    t = get_tokens(token=token)
+    if len(t) == 1:
+        g.role = t[0].role
         return True
     return False
