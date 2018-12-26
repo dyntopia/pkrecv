@@ -18,7 +18,8 @@ def role_required(role: str) -> Callable:
     def decorator(f: Callable) -> Callable:
         @functools.wraps(f)
         def wrapper(*args: Any, **kwargs: Any) -> Union[Dict, Response]:
-            if g.get("role", None) == role:
+            token = g.get("token")
+            if token and token.role == role:
                 return f(*args, **kwargs)
             return Response(
                 response=json.dumps({"message": "Permission denied"}),
@@ -36,6 +37,6 @@ def verify_token(token: str) -> bool:
     """
     t = get_tokens(token=token)
     if len(t) == 1:
-        g.role = t[0].role
+        g.token = t[0]
         return True
     return False
