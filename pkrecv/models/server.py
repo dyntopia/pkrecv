@@ -35,7 +35,7 @@ def add_server(ip: str, port: int, public_key: str, token_id: int) -> None:
         ip=ip,
         port=port,
         key_type=get_key_type(public_key),
-        public_key=public_key,
+        public_key=public_key.strip(),
         token_id=token_id
     ))
     db.session.commit()
