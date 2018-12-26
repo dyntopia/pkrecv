@@ -38,18 +38,22 @@ class GetTokensTest(FlaskTestCase):
         self.first = add_token("admin", "desc1")
         self.second = add_token("server", "desc2")
 
+    def test_excluded_field(self) -> None:
+        tokens = get_tokens()
+        self.assertEqual(len(tokens), 2)
+        self.assertFalse("token" in tokens[0].keys())
+        self.assertFalse("token" in tokens[1].keys())
+
     def test_id(self) -> None:
         first = get_tokens(id=1)
         self.assertEqual(len(first), 1)
         self.assertEqual(first[0].id, 1)
-        self.assertEqual(first[0].token, sha256(bytes(self.first, "ascii")))
         self.assertEqual(first[0].role, "admin")
         self.assertEqual(first[0].description, "desc1")
 
         second = get_tokens(id=2)
         self.assertEqual(len(second), 1)
         self.assertEqual(second[0].id, 2)
-        self.assertEqual(second[0].token, sha256(bytes(self.second, "ascii")))
         self.assertEqual(second[0].role, "server")
         self.assertEqual(second[0].description, "desc2")
 
@@ -57,14 +61,12 @@ class GetTokensTest(FlaskTestCase):
         first = get_tokens(token=self.first)
         self.assertEqual(len(first), 1)
         self.assertEqual(first[0].id, 1)
-        self.assertEqual(first[0].token, sha256(bytes(self.first, "ascii")))
         self.assertEqual(first[0].role, "admin")
         self.assertEqual(first[0].description, "desc1")
 
         second = get_tokens(token=self.second)
         self.assertEqual(len(second), 1)
         self.assertEqual(second[0].id, 2)
-        self.assertEqual(second[0].token, sha256(bytes(self.second, "ascii")))
         self.assertEqual(second[0].role, "server")
         self.assertEqual(second[0].description, "desc2")
 

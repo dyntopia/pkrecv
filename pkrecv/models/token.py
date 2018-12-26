@@ -4,6 +4,7 @@ import hashlib
 import os
 from typing import Any, List
 
+from munch import Munch
 from sqlalchemy import DateTime, Integer, String
 from sqlalchemy.orm import validates
 
@@ -31,6 +32,10 @@ class Token(Model):
         if role not in self.roles:
             raise TokenError("{} is not a valid role".format(role))
         return role
+
+    @property
+    def as_dict(self) -> Munch:
+        return self._to_dict(["token"])
 
 
 def get_tokens(**filters: Any) -> List[Token]:
