@@ -1,6 +1,6 @@
 import json
 
-from pkrecv.models.server import add_server
+from pkrecv.models.server import add_server, get_servers
 from pkrecv.models.token import add_token
 
 from ..helpers import FlaskTestCase
@@ -120,3 +120,61 @@ class ServerGetTest(FlaskTestCase):
         self.assertEqual(servers[0]["port"], 3)
         self.assertEqual(servers[0]["key_type"], "ed25519")
         self.assertEqual(servers[0]["public_key"], "ssh-ed25519 ...")
+
+
+class ServerPostTest(FlaskTestCase):
+    def test_unauthenticated(self) -> None:
+        res = self.client.post("/api/v1/server")
+        self.assertEqual(res.data, b"Unauthorized Access")
+        self.assertEqual(res.status_code, 401)
+
+    def test_unauthorized(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("admin", "desc")),
+        }
+        res = self.client.post("/api/v1/server", headers=headers)
+        obj = json.loads(res.data.decode("utf-8"))
+        self.assertEqual(obj["message"], "Permission denied")
+        self.assertEqual(res.status_code, 401)
+
+    def test_missing_public_key(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("server", "desc")),
+        }
+        res = self.client.post("/api/v1/server", headers=headers)
+        obj = json.loads(res.data.decode("utf-8"))
+        self.assertTrue("public_key" in obj["message"].keys())
+        self.assertEqual(res.status_code, 400)
+
+    def test_invalid_public_key(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("server", "desc")),
+        }
+
+        data = {
+            "public_key": ""
+        }
+
+        res = self.client.post("/api/v1/server", headers=headers, data=data)
+        obj = json.loads(res.data.decode("utf-8"))
+        self.assertEqual(obj["message"], "could not determine key type")
+        self.assertEqual(res.status_code, 400)
+
+    def test_success(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("server", "desc")),
+        }
+
+        data = {
+            "public_key": "ssh-rsa key comment"
+        }
+
+        res = self.client.post("/api/v1/server", headers=headers, data=data)
+        obj = json.loads(res.data.decode("utf-8"))
+        self.assertEqual(obj["message"], "added")
+        self.assertEqual(res.status_code, 200)
+
+        servers = get_servers()
+        self.assertEqual(len(servers), 1)
+        self.assertEqual(servers[0].key_type, "rsa")
+        self.assertEqual(servers[0].public_key, "ssh-rsa key comment")
