@@ -1,4 +1,4 @@
-import os
+from typing import Any, Dict
 
 from flask import Flask
 
@@ -10,16 +10,13 @@ class AppError(Exception):
     pass
 
 
-def init_app(config: str) -> Flask:
+def init_app(options: Dict[str, Any]) -> Flask:
     """
     Initialize flask.
     """
     app = Flask(__name__)
     app.app_context().push()
-    try:
-        app.config.from_pyfile(os.path.expanduser(config))
-    except (FileNotFoundError, SyntaxError) as e:
-        raise AppError(e)
+    app.config.from_mapping({k.upper(): v for k, v in options.items()})
 
     init_api(app)
     init_db(app)

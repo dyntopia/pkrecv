@@ -1,20 +1,30 @@
 import sys
 
 import click
+from munch import Munch
 
-from . import app, wsgi
+from . import app, config, wsgi
 from .models import token
 
 
 @click.group()
-@click.option("--config", default="~/.pkrecv.py")
+@click.option("--config-file", default="~/.pkrecv.ini")
 @click.pass_context
-def cli(ctx: click.Context, config: str) -> None:
+def cli(ctx: click.Context, config_file: str) -> None:
+    cfg = config.Config()
     try:
-        ctx.obj["app"] = app.init_app(config)
+        cfg.read(config_file)
+    except config.ConfigError as e:
+        sys.stderr.write("ERROR: {}\n".format(e))
+        sys.exit(1)
+
+    try:
+        flask = app.init_app(cfg.get_section("flask", {}))
     except app.AppError as e:
         sys.stderr.write("ERROR: {}\n".format(e))
         sys.exit(1)
+
+    ctx.obj.gunicorn = wsgi.Gunicorn(flask, cfg.get_section("gunicorn", {}))
 
 
 @cli.command("add-token")
@@ -32,10 +42,9 @@ def add_token(role: str, description: str) -> None:
 @cli.command()
 @click.pass_context
 def serve(ctx: click.Context) -> None:
-    options = ctx.obj["app"].config.get("GUNICORN", {})
-    wsgi.Gunicorn(ctx.obj["app"], options).run()
+    ctx.obj.gunicorn.run()
 
 
 def main() -> int:
-    cli(obj={})  # pylint: disable=E1120,E1123
+    cli(obj=Munch())  # pylint: disable=E1120,E1123
     return 0
