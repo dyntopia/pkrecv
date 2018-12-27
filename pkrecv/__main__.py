@@ -2,7 +2,7 @@ import sys
 
 import click
 
-from . import app
+from . import app, wsgi
 from .models import token
 
 
@@ -32,7 +32,8 @@ def add_token(role: str, description: str) -> None:
 @cli.command()
 @click.pass_context
 def serve(ctx: click.Context) -> None:
-    ctx.obj["app"].run()
+    options = ctx.obj["app"].config.get("GUNICORN", {})
+    wsgi.Gunicorn(ctx.obj["app"], options).run()
 
 
 def main() -> int:
