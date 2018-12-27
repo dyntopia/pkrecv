@@ -9,10 +9,15 @@ from flask_sqlalchemy import SQLAlchemy
 from munch import Munch
 from sqlalchemy import Column, event
 from sqlalchemy.engine import Engine
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.pool import _ConnectionRecord
 
 db = SQLAlchemy()
 column = functools.partial(Column, nullable=False)
+
+
+class DBError(Exception):
+    pass
 
 
 class Model(db.Model):  # type: ignore
@@ -70,4 +75,7 @@ def init_db(app: Flask) -> None:
     Initialize the database.
     """
     db.init_app(app)
-    db.create_all()
+    try:
+        db.create_all()
+    except SQLAlchemyError as e:
+        raise DBError(e)

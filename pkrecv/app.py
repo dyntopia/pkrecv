@@ -3,7 +3,7 @@ from typing import Any, Dict
 from flask import Flask
 
 from .api.api import init_api
-from .models.db import init_db
+from .models.db import DBError, init_db
 
 
 class AppError(Exception):
@@ -19,6 +19,10 @@ def init_app(options: Dict[str, Any]) -> Flask:
     app.config.from_mapping({k.upper(): v for k, v in options.items()})
 
     init_api(app)
-    init_db(app)
+
+    try:
+        init_db(app)
+    except DBError as e:
+        raise AppError(e)
 
     return app
