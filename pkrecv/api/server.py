@@ -16,6 +16,7 @@ class Server(Resource):  # type: ignore
         Retrieve a list of servers.
         """
         p = reqparse.RequestParser()
+        p.add_argument("id", type=str)
         p.add_argument("ip", type=str)
         p.add_argument("key_type", type=str)
         args = p.parse_args()

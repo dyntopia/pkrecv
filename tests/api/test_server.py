@@ -46,6 +46,30 @@ class ServerGetTest(FlaskTestCase):
         self.assertEqual(servers[1]["key_type"], "ed25519")
         self.assertEqual(servers[1]["public_key"], "ssh-ed25519 ...")
 
+    def test_id_filter(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("admin", "desc1")),
+        }
+
+        filters = {
+            "id": "2"
+        }
+
+        add_server(ip="1", port=1, public_key="ssh-rsa ...", token_id=1)
+        add_server(ip="2", port=2, public_key="ssh-ed25519 ...", token_id=1)
+
+        res = self.client.get("/api/v1/server", headers=headers, data=filters)
+        data = json.loads(res.data.decode("utf-8"))
+        servers = data["servers"]
+
+        self.assertEqual(len(servers), 1)
+
+        self.assertEqual(servers[0]["id"], 2)
+        self.assertEqual(servers[0]["ip"], "2")
+        self.assertEqual(servers[0]["port"], 2)
+        self.assertEqual(servers[0]["key_type"], "ed25519")
+        self.assertEqual(servers[0]["public_key"], "ssh-ed25519 ...")
+
     def test_ip_filter(self) -> None:
         headers = {
             "Authorization": "Bearer {}".format(add_token("admin", "desc1")),
