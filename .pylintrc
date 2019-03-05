@@ -37,7 +37,8 @@ disable=
     too-many-arguments,
 generated-members=
     db\.session\.add,
-    db\.session\.commit
+    db\.session\.commit,
+    db\.session\.delete
 
 [VARIABLES]
 init-import=yes

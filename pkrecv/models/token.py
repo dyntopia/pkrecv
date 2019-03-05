@@ -65,6 +65,14 @@ def add_token(role: str, description: str) -> str:
     return token.decode("ascii")
 
 
+def delete_token(identifier: int) -> None:
+    token = Token.query.filter_by(id=identifier).all()
+    if len(token) != 1:
+        raise TokenError("invalid token id {}".format(identifier))
+    db.session.delete(token[0])
+    db.session.commit()
+
+
 def generate_token(size: int) -> bytes:
     """
     Generate pseudorandom data and return its hexadecimal representation.

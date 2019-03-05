@@ -6,6 +6,7 @@ from pkrecv.models.token import (
     Token,
     TokenError,
     add_token,
+    delete_token,
     generate_token,
     get_tokens,
     sha256
@@ -29,6 +30,29 @@ class AddTokenTest(FlaskTestCase):
     def test_invalid_role(self) -> None:
         with self.assertRaises(TokenError):
             add_token("abcd", "")
+
+
+class DeleteTokenTest(FlaskTestCase):
+    def test_invalid_id(self) -> None:
+        with self.assertRaises(TokenError):
+            delete_token(0)
+
+        add_token("admin", "desc")
+
+        with self.assertRaises(TokenError):
+            delete_token(0)
+
+    def test_success(self) -> None:
+        add_token("admin", "desc0")
+        add_token("server", "desc1")
+        add_token("none", "desc2")
+
+        delete_token(2)
+
+        tokens = get_tokens()
+        self.assertEqual(len(tokens), 2)
+        self.assertEqual(tokens[0].role, "admin")
+        self.assertEqual(tokens[1].role, "none")
 
 
 class GetTokensTest(FlaskTestCase):

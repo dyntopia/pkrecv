@@ -97,3 +97,82 @@ class TokenPostTest(FlaskTestCase):
         data = json.loads(res.data.decode("utf-8"))
         self.assertIsInstance(data.get("token"), str)
         self.assertEqual(res.status_code, 200)
+
+
+class TokenDeleteTest(FlaskTestCase):
+    def test_unauthenticated(self) -> None:
+        res = self.client.delete("/api/v1/token")
+        self.assertEqual(res.data, b"Unauthorized Access")
+        self.assertEqual(res.status_code, 401)
+
+    def test_unauthorized_none(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("none", "desc")),
+        }
+
+        data = {
+            "id": 1
+        }
+
+        res = self.client.delete("/api/v1/token", headers=headers, data=data)
+        data = json.loads(res.data.decode("utf-8"))
+        self.assertEqual(data["message"], "Permission denied")
+        self.assertEqual(res.status_code, 401)
+
+    def test_unauthorized_server(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("server", "desc")),
+        }
+
+        data = {
+            "id": 1
+        }
+
+        res = self.client.delete("/api/v1/token", headers=headers, data=data)
+        data = json.loads(res.data.decode("utf-8"))
+        self.assertEqual(data["message"], "Permission denied")
+        self.assertEqual(res.status_code, 401)
+
+    def test_missing_id(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("admin", "desc")),
+        }
+
+        res = self.client.delete("/api/v1/token", headers=headers)
+        data = json.loads(res.data.decode("utf-8"))
+        self.assertTrue("Missing required parameter" in data["message"]["id"])
+        self.assertEqual(res.status_code, 400)
+
+    def test_invalid_id(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("admin", "desc")),
+        }
+
+        data = {
+            "id": 2
+        }
+
+        res = self.client.delete("/api/v1/token", headers=headers, data=data)
+        data = json.loads(res.data.decode("utf-8"))
+        self.assertEqual(data["message"], "invalid token id 2")
+        self.assertEqual(res.status_code, 400)
+
+    def test_success(self) -> None:
+        add_token("server", "desc")
+
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("admin", "desc")),
+        }
+
+        data = {
+            "id": 1
+        }
+
+        res = self.client.delete("/api/v1/token", headers=headers, data=data)
+        data = json.loads(res.data.decode("utf-8"))
+        self.assertEqual(data["message"], "deleted")
+        self.assertEqual(res.status_code, 200)
+
+        res = self.client.get("/api/v1/token", headers=headers)
+        tokens = json.loads(res.data.decode("utf-8"))["tokens"]
+        self.assertEqual(len(tokens), 1)
