@@ -24,16 +24,20 @@ class AddServerTest(FlaskTestCase):
         with self.assertRaises(ServerError):
             add_server("ip", 1234, "sh-rsa data comment", 1)
 
+    def test_invalid_key_data(self) -> None:
+        with self.assertRaises(ServerError):
+            add_server("ip", 1234, "ssh-ed25519 abc comment", 1)
+
     def test_success(self) -> None:
         add_token("server", "desc")
-        add_server("ip", 1234, "ssh-rsa key comment", 1)
+        add_server("ip", 1234, "ssh-rsa data comment", 1)
 
         servers = get_servers()
         self.assertEqual(len(servers), 1)
         self.assertEqual(servers[0].ip, "ip")
         self.assertEqual(servers[0].port, 1234)
         self.assertEqual(servers[0].key_type, "ssh-rsa")
-        self.assertEqual(servers[0].key_data, "key")
+        self.assertEqual(servers[0].key_data, "data")
         self.assertEqual(servers[0].key_comment, "comment")
         self.assertEqual(servers[0].token_id, 1)
 
@@ -50,8 +54,8 @@ class AddServerTest(FlaskTestCase):
 class GetServersTest(FlaskTestCase):
     def test_id(self) -> None:
         add_token("server", "desc")
-        add_server("ip1", 1111, "ssh-rsa key comment", 1)
-        add_server("ip2", 2222, "ssh-ed25519 key comment", 1)
+        add_server("ip1", 1111, "ssh-rsa data comment", 1)
+        add_server("ip2", 2222, "ssh-ed25519 data comment", 1)
 
         servers = get_servers(id=2)
         self.assertEqual(len(servers), 1)
@@ -59,8 +63,8 @@ class GetServersTest(FlaskTestCase):
 
     def test_ip(self) -> None:
         add_token("server", "desc")
-        add_server("ip1", 1111, "ssh-rsa key comment", 1)
-        add_server("ip2", 2222, "ssh-ed25519 key comment", 1)
+        add_server("ip1", 1111, "ssh-rsa data comment", 1)
+        add_server("ip2", 2222, "ssh-ed25519 data comment", 1)
 
         servers = get_servers(ip="ip1")
         self.assertEqual(len(servers), 1)
@@ -70,7 +74,7 @@ class GetServersTest(FlaskTestCase):
         add_token("server", "desc")
 
         for i in range(10):
-            add_server("ip", i, "ssh-rsa key comment", 1)
+            add_server("ip", i, "ssh-rsa data comment", 1)
 
         servers = get_servers()
         self.assertEqual(len(servers), 10)

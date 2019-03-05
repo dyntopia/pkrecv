@@ -196,7 +196,7 @@ class ServerPostTest(FlaskTestCase):
         }
 
         data = {
-            "public_key": "ssh-rsa key comment"
+            "public_key": "ssh-rsa data comment"
         }
 
         res = self.client.post("/api/v1/server", headers=headers, data=data)
@@ -207,5 +207,5 @@ class ServerPostTest(FlaskTestCase):
         servers = get_servers()
         self.assertEqual(len(servers), 1)
         self.assertEqual(servers[0].key_type, "ssh-rsa")
-        self.assertEqual(servers[0].key_data, "key")
+        self.assertEqual(servers[0].key_data, "data")
         self.assertEqual(servers[0].key_comment, "comment")

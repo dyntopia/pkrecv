@@ -1,3 +1,5 @@
+import base64
+import binascii
 import datetime
 from typing import Any, List
 
@@ -36,6 +38,14 @@ class Server(Model):
         if key_type not in key_types:
             raise ServerError("{} is not a valid key type".format(key_type))
         return key_type
+
+    @validates("key_data")
+    def validate_key_data(self, _: str, key_data: str) -> str:
+        try:
+            base64.b64decode(key_data)
+        except binascii.Error:
+            raise ServerError("{} is not a valid key".format(key_data))
+        return key_data
     # pylint: enable=no-self-use
 
 
