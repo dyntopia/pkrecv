@@ -1,6 +1,14 @@
+from argparse import ArgumentParser
 from unittest import TestCase
 
 from pkrecv.wsgi import Gunicorn
+
+
+class InitTest(TestCase):
+    @staticmethod
+    def test_implemented() -> None:
+        gunicorn = Gunicorn(None, {})
+        gunicorn.init(ArgumentParser(), {}, [])
 
 
 class LoadConfigTest(TestCase):
