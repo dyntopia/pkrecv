@@ -25,15 +25,15 @@ class AddServerTest(FlaskTestCase):
         self.assertEqual(servers[0].ip, "ip")
         self.assertEqual(servers[0].port, 1234)
         self.assertEqual(servers[0].key_type, "rsa")
-        self.assertEqual(servers[0].public_key, "ssh-rsa key comment")
+        self.assertEqual(servers[0].key_data, "ssh-rsa key comment")
         self.assertEqual(servers[0].token_id, 1)
 
-    def test_strip_public_key(self) -> None:
+    def test_strip_key_data(self) -> None:
         add_token("server", "desc")
         add_server("ip", 1234, "ssh-rsa key comment\n", 1)
 
         servers = get_servers()
-        self.assertEqual(servers[0].public_key, "ssh-rsa key comment")
+        self.assertEqual(servers[0].key_data, "ssh-rsa key comment")
 
 
 class GetServersTest(FlaskTestCase):

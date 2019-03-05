@@ -15,7 +15,7 @@ class Server(Model):
     ip = column(String(45))  # http://www.ipuptime.net/ipv4mapped.aspx
     port = column(Integer, default=22)
     key_type = column(String(32))
-    public_key = column(String(4096))
+    key_data = column(String(4096))
     created = column(DateTime, default=datetime.datetime.utcnow)
     token_id = column(Integer, ForeignKey("token.id"))
 
@@ -35,7 +35,7 @@ def add_server(ip: str, port: int, public_key: str, token_id: int) -> None:
         ip=ip,
         port=port,
         key_type=get_key_type(public_key),
-        public_key=public_key.strip(),
+        key_data=public_key.strip(),
         token_id=token_id
     ))
     db.session.commit()

@@ -38,13 +38,13 @@ class ServerGetTest(FlaskTestCase):
         self.assertEqual(servers[0]["ip"], "1")
         self.assertEqual(servers[0]["port"], 1)
         self.assertEqual(servers[0]["key_type"], "rsa")
-        self.assertEqual(servers[0]["public_key"], "ssh-rsa ...")
+        self.assertEqual(servers[0]["key_data"], "ssh-rsa ...")
 
         self.assertEqual(servers[1]["id"], 2)
         self.assertEqual(servers[1]["ip"], "2")
         self.assertEqual(servers[1]["port"], 2)
         self.assertEqual(servers[1]["key_type"], "ed25519")
-        self.assertEqual(servers[1]["public_key"], "ssh-ed25519 ...")
+        self.assertEqual(servers[1]["key_data"], "ssh-ed25519 ...")
 
     def test_id_filter(self) -> None:
         headers = {
@@ -68,7 +68,7 @@ class ServerGetTest(FlaskTestCase):
         self.assertEqual(servers[0]["ip"], "2")
         self.assertEqual(servers[0]["port"], 2)
         self.assertEqual(servers[0]["key_type"], "ed25519")
-        self.assertEqual(servers[0]["public_key"], "ssh-ed25519 ...")
+        self.assertEqual(servers[0]["key_data"], "ssh-ed25519 ...")
 
     def test_ip_filter(self) -> None:
         headers = {
@@ -92,7 +92,7 @@ class ServerGetTest(FlaskTestCase):
         self.assertEqual(servers[0]["ip"], "2")
         self.assertEqual(servers[0]["port"], 2)
         self.assertEqual(servers[0]["key_type"], "ed25519")
-        self.assertEqual(servers[0]["public_key"], "ssh-ed25519 ...")
+        self.assertEqual(servers[0]["key_data"], "ssh-ed25519 ...")
 
     def test_key_type_filter(self) -> None:
         headers = {
@@ -116,7 +116,7 @@ class ServerGetTest(FlaskTestCase):
         self.assertEqual(servers[0]["ip"], "2")
         self.assertEqual(servers[0]["port"], 2)
         self.assertEqual(servers[0]["key_type"], "ed25519")
-        self.assertEqual(servers[0]["public_key"], "ssh-ed25519 ...")
+        self.assertEqual(servers[0]["key_data"], "ssh-ed25519 ...")
 
     def test_ip_and_key_type_filter(self) -> None:
         headers = {
@@ -143,7 +143,7 @@ class ServerGetTest(FlaskTestCase):
         self.assertEqual(servers[0]["ip"], "3")
         self.assertEqual(servers[0]["port"], 3)
         self.assertEqual(servers[0]["key_type"], "ed25519")
-        self.assertEqual(servers[0]["public_key"], "ssh-ed25519 ...")
+        self.assertEqual(servers[0]["key_data"], "ssh-ed25519 ...")
 
 
 class ServerPostTest(FlaskTestCase):
@@ -201,4 +201,4 @@ class ServerPostTest(FlaskTestCase):
         servers = get_servers()
         self.assertEqual(len(servers), 1)
         self.assertEqual(servers[0].key_type, "rsa")
-        self.assertEqual(servers[0].public_key, "ssh-rsa key comment")
+        self.assertEqual(servers[0].key_data, "ssh-rsa key comment")
