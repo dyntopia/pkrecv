@@ -2,6 +2,7 @@ import datetime
 from typing import Any, List
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String
+from sqlalchemy.orm import validates
 
 from .db import Model, column, db
 
@@ -19,6 +20,23 @@ class Server(Model):
     key_comment = column(String(4096))
     created = column(DateTime, default=datetime.datetime.utcnow)
     token_id = column(Integer, ForeignKey("token.id"))
+
+    # pylint: disable=no-self-use
+    @validates("key_type")
+    def validate_key_type(self, _: str, key_type: str) -> str:
+        # From sshd(8).
+        key_types = [
+            "ecdsa-sha2-nistp256",
+            "ecdsa-sha2-nistp384",
+            "ecdsa-sha2-nistp521",
+            "ssh-ed25519",
+            "ssh-dss",
+            "ssh-rsa"
+        ]
+        if key_type not in key_types:
+            raise ServerError("{} is not a valid key type".format(key_type))
+        return key_type
+    # pylint: enable=no-self-use
 
 
 def get_servers(**filters: Any) -> List[Server]:

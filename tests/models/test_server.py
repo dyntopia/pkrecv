@@ -16,6 +16,14 @@ class AddServerTest(FlaskTestCase):
         with self.assertRaises(ServerError):
             add_server("ip", 1234, "", 1)
 
+    def test_invalid_key_type_ssh_rsa1(self) -> None:
+        with self.assertRaises(ServerError):
+            add_server("ip", 1234, "ssh-rsa1 data comment", 1)
+
+    def test_invalid_key_type_sh_rsa(self) -> None:
+        with self.assertRaises(ServerError):
+            add_server("ip", 1234, "sh-rsa data comment", 1)
+
     def test_success(self) -> None:
         add_token("server", "desc")
         add_server("ip", 1234, "ssh-rsa key comment", 1)
