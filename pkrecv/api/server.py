@@ -26,7 +26,7 @@ class Server(Resource):  # type: ignore
 
     @staticmethod
     @login_required
-    @role_required("server")
+    @role_required("admin", "server")
     def post() -> Union[Dict, Tuple]:
         """
         Add a server.

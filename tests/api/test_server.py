@@ -169,7 +169,7 @@ class ServerPostTest(FlaskTestCase):
 
     def test_unauthorized(self) -> None:
         headers = {
-            "Authorization": "Bearer {}".format(add_token("admin", "desc")),
+            "Authorization": "Bearer {}".format(add_token("none", "desc")),
         }
         res = self.client.post("/api/v1/server", headers=headers)
         obj = json.loads(res.data.decode("utf-8"))
@@ -199,7 +199,7 @@ class ServerPostTest(FlaskTestCase):
         self.assertEqual(obj["message"], "invalid public key")
         self.assertEqual(res.status_code, 400)
 
-    def test_success(self) -> None:
+    def test_success_server(self) -> None:
         headers = {
             "Authorization": "Bearer {}".format(add_token("server", "desc")),
         }
@@ -218,3 +218,23 @@ class ServerPostTest(FlaskTestCase):
         self.assertEqual(servers[0].key_type, "ssh-rsa")
         self.assertEqual(servers[0].key_data, "data")
         self.assertEqual(servers[0].key_comment, "comment")
+
+    def test_success_admin(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("admin", "desc")),
+        }
+
+        data = {
+            "public_key": "ecdsa-sha2-nistp384 data1234 comment321"
+        }
+
+        res = self.client.post("/api/v1/server", headers=headers, data=data)
+        obj = json.loads(res.data.decode("utf-8"))
+        self.assertEqual(obj["message"], "added")
+        self.assertEqual(res.status_code, 200)
+
+        servers = get_servers()
+        self.assertEqual(len(servers), 1)
+        self.assertEqual(servers[0].key_type, "ecdsa-sha2-nistp384")
+        self.assertEqual(servers[0].key_data, "data1234")
+        self.assertEqual(servers[0].key_comment, "comment321")
