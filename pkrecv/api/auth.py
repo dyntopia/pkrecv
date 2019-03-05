@@ -11,7 +11,7 @@ auth = HTTPTokenAuth()
 login_required = auth.login_required
 
 
-def role_required(role: str) -> Callable:
+def role_required(*roles: str) -> Callable:
     """
     Authorize a token.
     """
@@ -19,7 +19,7 @@ def role_required(role: str) -> Callable:
         @functools.wraps(f)
         def wrapper(*args: Any, **kwargs: Any) -> Union[Dict, Response]:
             token = g.get("token")
-            if token and token.role == role:
+            if token and token.role in roles:
                 return f(*args, **kwargs)
             return Response(
                 response=json.dumps({"message": "Permission denied"}),
