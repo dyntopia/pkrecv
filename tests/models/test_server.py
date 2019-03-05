@@ -3,8 +3,8 @@ from unittest import TestCase
 from pkrecv.models.server import (
     ServerError,
     add_server,
-    get_key_type,
-    get_servers
+    get_servers,
+    split_key
 )
 from pkrecv.models.token import add_token
 
@@ -24,16 +24,19 @@ class AddServerTest(FlaskTestCase):
         self.assertEqual(len(servers), 1)
         self.assertEqual(servers[0].ip, "ip")
         self.assertEqual(servers[0].port, 1234)
-        self.assertEqual(servers[0].key_type, "rsa")
-        self.assertEqual(servers[0].key_data, "ssh-rsa key comment")
+        self.assertEqual(servers[0].key_type, "ssh-rsa")
+        self.assertEqual(servers[0].key_data, "key")
+        self.assertEqual(servers[0].key_comment, "comment")
         self.assertEqual(servers[0].token_id, 1)
 
-    def test_strip_key_data(self) -> None:
+    def test_strip_key(self) -> None:
         add_token("server", "desc")
-        add_server("ip", 1234, "ssh-rsa key comment\n", 1)
+        add_server("ip", 1234, "   ssh-rsa    data     comment    \n\n\n", 1)
 
         servers = get_servers()
-        self.assertEqual(servers[0].key_data, "ssh-rsa key comment")
+        self.assertEqual(servers[0].key_type, "ssh-rsa")
+        self.assertEqual(servers[0].key_data, "data")
+        self.assertEqual(servers[0].key_comment, "comment")
 
 
 class GetServersTest(FlaskTestCase):
@@ -65,13 +68,21 @@ class GetServersTest(FlaskTestCase):
         self.assertEqual(len(servers), 10)
 
 
-class GetKeyTypeTest(TestCase):
-    def test_invalid(self) -> None:
+class SplitKeyTest(TestCase):
+    def test_empty(self) -> None:
         with self.assertRaises(ServerError):
-            get_key_type("")
+            split_key("")
 
-    def test_rsa(self) -> None:
-        self.assertEqual(get_key_type("ssh-rsa key comment"), "rsa")
+    def test_missing_data_and_comment(self) -> None:
+        with self.assertRaises(ServerError):
+            split_key("type")
 
-    def test_ed25519(self) -> None:
-        self.assertEqual(get_key_type("ssh-ed25519 key comment"), "ed25519")
+    def test_excessive_fields(self) -> None:
+        with self.assertRaises(ServerError):
+            split_key("type data comment xyz")
+
+    def test_missing_comment(self) -> None:
+        self.assertEqual(split_key("type   data  "), ["type", "data", ""])
+
+    def test_have_all_fields(self) -> None:
+        self.assertEqual(split_key("type data cmt"), ["type", "data", "cmt"])

@@ -32,22 +32,26 @@ def add_server(ip: str, port: int, public_key: str, token_id: int) -> None:
     """
     Add a server.
     """
+    key_type, key_data, key_comment = split_key(public_key)
+
     db.session.add(Server(
         ip=ip,
         port=port,
-        key_type=get_key_type(public_key),
-        key_data=public_key.strip(),
-        key_comment="",
+        key_type=key_type,
+        key_data=key_data,
+        key_comment=key_comment,
         token_id=token_id
     ))
     db.session.commit()
 
 
-def get_key_type(public_key: str) -> str:
+def split_key(public_key: str) -> List[str]:
     """
-    Retrieve the key type for a public key.
+    Split a public key into a list of [type, data, comment].
     """
-    try:
-        return public_key.split()[0].lstrip("ssh-")
-    except IndexError:
-        raise ServerError("could not determine key type")
+    components = public_key.split()
+    if len(components) == 3:
+        return components
+    if len(components) == 2:
+        return components + [""]
+    raise ServerError("invalid public key")

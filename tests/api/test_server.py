@@ -37,14 +37,16 @@ class ServerGetTest(FlaskTestCase):
         self.assertEqual(servers[0]["id"], 1)
         self.assertEqual(servers[0]["ip"], "1")
         self.assertEqual(servers[0]["port"], 1)
-        self.assertEqual(servers[0]["key_type"], "rsa")
-        self.assertEqual(servers[0]["key_data"], "ssh-rsa ...")
+        self.assertEqual(servers[0]["key_type"], "ssh-rsa")
+        self.assertEqual(servers[0]["key_data"], "...")
+        self.assertEqual(servers[0]["key_comment"], "")
 
         self.assertEqual(servers[1]["id"], 2)
         self.assertEqual(servers[1]["ip"], "2")
         self.assertEqual(servers[1]["port"], 2)
-        self.assertEqual(servers[1]["key_type"], "ed25519")
-        self.assertEqual(servers[1]["key_data"], "ssh-ed25519 ...")
+        self.assertEqual(servers[1]["key_type"], "ssh-ed25519")
+        self.assertEqual(servers[1]["key_data"], "...")
+        self.assertEqual(servers[1]["key_comment"], "")
 
     def test_id_filter(self) -> None:
         headers = {
@@ -55,8 +57,8 @@ class ServerGetTest(FlaskTestCase):
             "id": "2"
         }
 
-        add_server(ip="1", port=1, public_key="ssh-rsa ...", token_id=1)
-        add_server(ip="2", port=2, public_key="ssh-ed25519 ...", token_id=1)
+        add_server(ip="1", port=1, public_key="ssh-rsa ... c", token_id=1)
+        add_server(ip="2", port=2, public_key="ssh-ed25519 ... c", token_id=1)
 
         res = self.client.get("/api/v1/server", headers=headers, data=filters)
         data = json.loads(res.data.decode("utf-8"))
@@ -67,8 +69,9 @@ class ServerGetTest(FlaskTestCase):
         self.assertEqual(servers[0]["id"], 2)
         self.assertEqual(servers[0]["ip"], "2")
         self.assertEqual(servers[0]["port"], 2)
-        self.assertEqual(servers[0]["key_type"], "ed25519")
-        self.assertEqual(servers[0]["key_data"], "ssh-ed25519 ...")
+        self.assertEqual(servers[0]["key_type"], "ssh-ed25519")
+        self.assertEqual(servers[0]["key_data"], "...")
+        self.assertEqual(servers[0]["key_comment"], "c")
 
     def test_ip_filter(self) -> None:
         headers = {
@@ -79,8 +82,8 @@ class ServerGetTest(FlaskTestCase):
             "ip": "2"
         }
 
-        add_server(ip="1", port=1, public_key="ssh-rsa ...", token_id=1)
-        add_server(ip="2", port=2, public_key="ssh-ed25519 ...", token_id=1)
+        add_server(ip="1", port=1, public_key="ssh-rsa ... x", token_id=1)
+        add_server(ip="2", port=2, public_key="ssh-ed25519 ... y", token_id=1)
 
         res = self.client.get("/api/v1/server", headers=headers, data=filters)
         data = json.loads(res.data.decode("utf-8"))
@@ -91,8 +94,9 @@ class ServerGetTest(FlaskTestCase):
         self.assertEqual(servers[0]["id"], 2)
         self.assertEqual(servers[0]["ip"], "2")
         self.assertEqual(servers[0]["port"], 2)
-        self.assertEqual(servers[0]["key_type"], "ed25519")
-        self.assertEqual(servers[0]["key_data"], "ssh-ed25519 ...")
+        self.assertEqual(servers[0]["key_type"], "ssh-ed25519")
+        self.assertEqual(servers[0]["key_data"], "...")
+        self.assertEqual(servers[0]["key_comment"], "y")
 
     def test_key_type_filter(self) -> None:
         headers = {
@@ -100,7 +104,7 @@ class ServerGetTest(FlaskTestCase):
         }
 
         filters = {
-            "key_type": "ed25519"
+            "key_type": "ssh-ed25519"
         }
 
         add_server(ip="1", port=1, public_key="ssh-rsa ...", token_id=1)
@@ -115,8 +119,9 @@ class ServerGetTest(FlaskTestCase):
         self.assertEqual(servers[0]["id"], 2)
         self.assertEqual(servers[0]["ip"], "2")
         self.assertEqual(servers[0]["port"], 2)
-        self.assertEqual(servers[0]["key_type"], "ed25519")
-        self.assertEqual(servers[0]["key_data"], "ssh-ed25519 ...")
+        self.assertEqual(servers[0]["key_type"], "ssh-ed25519")
+        self.assertEqual(servers[0]["key_data"], "...")
+        self.assertEqual(servers[0]["key_comment"], "")
 
     def test_ip_and_key_type_filter(self) -> None:
         headers = {
@@ -125,7 +130,7 @@ class ServerGetTest(FlaskTestCase):
 
         filters = {
             "ip": "3",
-            "key_type": "ed25519"
+            "key_type": "ssh-ed25519"
         }
 
         add_server(ip="1", port=1, public_key="ssh-rsa ...", token_id=1)
@@ -142,8 +147,9 @@ class ServerGetTest(FlaskTestCase):
         self.assertEqual(servers[0]["id"], 3)
         self.assertEqual(servers[0]["ip"], "3")
         self.assertEqual(servers[0]["port"], 3)
-        self.assertEqual(servers[0]["key_type"], "ed25519")
-        self.assertEqual(servers[0]["key_data"], "ssh-ed25519 ...")
+        self.assertEqual(servers[0]["key_type"], "ssh-ed25519")
+        self.assertEqual(servers[0]["key_data"], "...")
+        self.assertEqual(servers[0]["key_comment"], "")
 
 
 class ServerPostTest(FlaskTestCase):
@@ -181,7 +187,7 @@ class ServerPostTest(FlaskTestCase):
 
         res = self.client.post("/api/v1/server", headers=headers, data=data)
         obj = json.loads(res.data.decode("utf-8"))
-        self.assertEqual(obj["message"], "could not determine key type")
+        self.assertEqual(obj["message"], "invalid public key")
         self.assertEqual(res.status_code, 400)
 
     def test_success(self) -> None:
@@ -200,5 +206,6 @@ class ServerPostTest(FlaskTestCase):
 
         servers = get_servers()
         self.assertEqual(len(servers), 1)
-        self.assertEqual(servers[0].key_type, "rsa")
-        self.assertEqual(servers[0].key_data, "ssh-rsa key comment")
+        self.assertEqual(servers[0].key_type, "ssh-rsa")
+        self.assertEqual(servers[0].key_data, "key")
+        self.assertEqual(servers[0].key_comment, "comment")
