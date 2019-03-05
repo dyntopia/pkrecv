@@ -238,3 +238,92 @@ class ServerPostTest(FlaskTestCase):
         self.assertEqual(servers[0].key_type, "ecdsa-sha2-nistp384")
         self.assertEqual(servers[0].key_data, "data1234")
         self.assertEqual(servers[0].key_comment, "comment321")
+
+
+class ServerDeleteTest(FlaskTestCase):
+    def test_unauthenticated(self) -> None:
+        res = self.client.delete("/api/v1/server")
+        self.assertEqual(res.data, b"Unauthorized Access")
+        self.assertEqual(res.status_code, 401)
+
+    def test_unauthorized_none(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("none", "desc")),
+        }
+
+        data = {
+            "id": 1
+        }
+
+        add_server("10.0.0.1", 11, "ssh-rsa data", 1)
+
+        res = self.client.delete("/api/v1/server", headers=headers, data=data)
+        data = json.loads(res.data.decode("utf-8"))
+        self.assertEqual(data["message"], "Permission denied")
+        self.assertEqual(res.status_code, 401)
+
+    def test_unauthorized_server(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("server", "desc")),
+        }
+
+        data = {
+            "id": 1
+        }
+
+        add_server("10.0.0.1", 11, "ssh-rsa data", 1)
+
+        res = self.client.delete("/api/v1/server", headers=headers, data=data)
+        data = json.loads(res.data.decode("utf-8"))
+        self.assertEqual(data["message"], "Permission denied")
+        self.assertEqual(res.status_code, 401)
+
+    def test_missing_id(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("admin", "desc")),
+        }
+
+        res = self.client.delete("/api/v1/server", headers=headers)
+        data = json.loads(res.data.decode("utf-8"))
+        self.assertTrue("Missing required parameter" in data["message"]["id"])
+        self.assertEqual(res.status_code, 400)
+
+    def test_invalid_id(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("admin", "desc")),
+        }
+
+        data = {
+            "id": 2
+        }
+
+        add_server("10.0.0.1", 11, "ssh-rsa data", 1)
+
+        res = self.client.delete("/api/v1/server", headers=headers, data=data)
+        data = json.loads(res.data.decode("utf-8"))
+        self.assertEqual(data["message"], "invalid server id 2")
+        self.assertEqual(res.status_code, 400)
+
+    def test_success(self) -> None:
+        add_token("server", "desc")
+
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("admin", "desc")),
+        }
+
+        data = {
+            "id": 1
+        }
+
+        add_server("10.0.0.1", 11, "ssh-rsa data", 1)
+        add_server("10.0.0.2", 22, "ssh-rsa data", 1)
+        add_server("10.0.0.2", 33, "ssh-rsa data", 1)
+
+        res = self.client.delete("/api/v1/server", headers=headers, data=data)
+        data = json.loads(res.data.decode("utf-8"))
+        self.assertEqual(data["message"], "deleted")
+        self.assertEqual(res.status_code, 200)
+
+        res = self.client.get("/api/v1/server", headers=headers)
+        servers = json.loads(res.data.decode("utf-8"))["servers"]
+        self.assertEqual(len(servers), 2)

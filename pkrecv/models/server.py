@@ -73,6 +73,14 @@ def add_server(ip: str, port: int, public_key: str, token_id: int) -> None:
     db.session.commit()
 
 
+def delete_server(identifier: int) -> None:
+    server = Server.query.filter_by(id=identifier).all()
+    if len(server) != 1:
+        raise ServerError("invalid server id {}".format(identifier))
+    db.session.delete(server[0])
+    db.session.commit()
+
+
 def split_key(public_key: str) -> List[str]:
     """
     Split a public key into a list of [type, data, comment].

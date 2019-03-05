@@ -3,7 +3,7 @@ from typing import Dict, Tuple, Union
 from flask import g, request
 from flask_restful import Resource, reqparse
 
-from ..models.server import ServerError, add_server, get_servers
+from ..models.server import ServerError, add_server, delete_server, get_servers
 from .auth import login_required, role_required
 
 
@@ -42,3 +42,20 @@ class Server(Resource):  # type: ignore
         except ServerError as e:
             return {"message": str(e)}, 400
         return {"message": "added"}
+
+    @staticmethod
+    @login_required
+    @role_required("admin")
+    def delete() -> Union[Dict, Tuple]:
+        """
+        Delete a server.
+        """
+        p = reqparse.RequestParser()
+        p.add_argument("id", type=int, required=True)
+        args = p.parse_args()
+
+        try:
+            delete_server(args.id)
+        except ServerError as e:
+            return {"message": str(e)}, 400
+        return {"message": "deleted"}

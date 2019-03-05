@@ -3,6 +3,7 @@ from unittest import TestCase
 from pkrecv.models.server import (
     ServerError,
     add_server,
+    delete_server,
     get_servers,
     split_key
 )
@@ -49,6 +50,36 @@ class AddServerTest(FlaskTestCase):
         self.assertEqual(servers[0].key_type, "ssh-rsa")
         self.assertEqual(servers[0].key_data, "data")
         self.assertEqual(servers[0].key_comment, "comment")
+
+
+class DeleteServerTest(FlaskTestCase):
+    def test_invalid_id(self) -> None:
+        with self.assertRaises(ServerError):
+            delete_server(0)
+
+        add_token("admin", "desc")
+        add_server("10.0.0.1", 1234, "ssh-rsa data", 1)
+        add_server("10.0.0.2", 4321, "ssh-rsa data", 1)
+
+        with self.assertRaises(ServerError):
+            delete_server(0)
+
+        self.assertEqual(len(get_servers()), 2)
+
+    def test_success(self) -> None:
+        add_token("admin", "desc0")
+
+        add_server("10.0.0.1", 11, "ssh-rsa data", 1)
+        add_server("10.0.0.2", 22, "ecdsa-sha2-nistp521 data", 1)
+        add_server("10.0.0.3", 33, "ssh-ed25519 data", 1)
+        self.assertEqual(len(get_servers()), 3)
+
+        delete_server(2)
+
+        servers = get_servers()
+        self.assertEqual(len(servers), 2)
+        self.assertEqual(servers[0].ip, "10.0.0.1")
+        self.assertEqual(servers[1].ip, "10.0.0.3")
 
 
 class GetServersTest(FlaskTestCase):
