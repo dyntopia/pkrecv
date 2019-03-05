@@ -12,9 +12,18 @@ class ServerGetTest(FlaskTestCase):
         self.assertEqual(res.data, b"Unauthorized Access")
         self.assertEqual(res.status_code, 401)
 
-    def test_unauthorized(self) -> None:
+    def test_unauthorized_server(self) -> None:
         headers = {
             "Authorization": "Bearer {}".format(add_token("server", "desc")),
+        }
+        res = self.client.get("/api/v1/server", headers=headers)
+        data = json.loads(res.data.decode("utf-8"))
+        self.assertEqual(data["message"], "Permission denied")
+        self.assertEqual(res.status_code, 401)
+
+    def test_unauthorized_none(self) -> None:
+        headers = {
+            "Authorization": "Bearer {}".format(add_token("none", "desc")),
         }
         res = self.client.get("/api/v1/server", headers=headers)
         data = json.loads(res.data.decode("utf-8"))

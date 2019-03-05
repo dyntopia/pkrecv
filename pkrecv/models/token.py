@@ -18,7 +18,8 @@ class TokenError(Exception):
 class Token(Model):
     roles = [
         "admin",
-        "server"
+        "server",
+        "none"
     ]
 
     id = column(Integer, primary_key=True)
