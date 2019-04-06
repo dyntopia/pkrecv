@@ -1,2 +1,6 @@
 [run]
 source = pkrecv
+omit = pkrecv/__main__.py
+
+[report]
+fail_under = 100
