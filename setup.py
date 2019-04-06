@@ -25,6 +25,7 @@ setuptools.setup(
     version=pkrecv.__version__,
     author="Hans Jerry Illikainen",
     author_email="hji@dyntopia.com",
+    license="BSD-2-Clause",
     python_requires=">=3.5",
     install_requires=list(get_requirements("requirements/requirements.txt")),
     packages=["pkrecv"],
