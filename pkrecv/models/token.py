@@ -19,7 +19,7 @@ class Token(Model):
     roles = [
         "admin",
         "server",
-        "none"
+        "none",
     ]
 
     id = column(Integer, primary_key=True)
@@ -55,11 +55,9 @@ def add_token(role: str, description: str) -> str:
     """
     token = generate_token(32)
 
-    db.session.add(Token(
-        token=sha256(token),
-        role=role,
-        description=description
-    ))
+    db.session.add(
+        Token(token=sha256(token), role=role, description=description)
+    )
     db.session.commit()
 
     return token.decode("ascii")
@@ -75,7 +73,7 @@ def delete_token(identifier: int) -> None:
 
 def generate_token(size: int) -> bytes:
     """
-    Generate pseudorandom data and return its hexadecimal representation.
+    Generate pseudorandom data and return its representation in hex.
     """
     data = os.urandom(size)
     return binascii.hexlify(data)

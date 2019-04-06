@@ -75,9 +75,7 @@ class TokenPostTest(FlaskTestCase):
             "Authorization": "Bearer {}".format(add_token("admin", "desc")),
         }
 
-        data = {
-            "role": "x"
-        }
+        data = {"role": "x"}
 
         res = self.client.post("/api/v1/token", headers=headers, data=data)
         data = json.loads(res.data.decode("utf-8"))
@@ -89,9 +87,7 @@ class TokenPostTest(FlaskTestCase):
             "Authorization": "Bearer {}".format(add_token("admin", "desc")),
         }
 
-        data = {
-            "role": "server"
-        }
+        data = {"role": "server"}
 
         res = self.client.post("/api/v1/token", headers=headers, data=data)
         data = json.loads(res.data.decode("utf-8"))
@@ -110,9 +106,7 @@ class TokenDeleteTest(FlaskTestCase):
             "Authorization": "Bearer {}".format(add_token("none", "desc")),
         }
 
-        data = {
-            "id": 1
-        }
+        data = {"id": 1}
 
         res = self.client.delete("/api/v1/token", headers=headers, data=data)
         data = json.loads(res.data.decode("utf-8"))
@@ -124,9 +118,7 @@ class TokenDeleteTest(FlaskTestCase):
             "Authorization": "Bearer {}".format(add_token("server", "desc")),
         }
 
-        data = {
-            "id": 1
-        }
+        data = {"id": 1}
 
         res = self.client.delete("/api/v1/token", headers=headers, data=data)
         data = json.loads(res.data.decode("utf-8"))
@@ -148,9 +140,7 @@ class TokenDeleteTest(FlaskTestCase):
             "Authorization": "Bearer {}".format(add_token("admin", "desc")),
         }
 
-        data = {
-            "id": 2
-        }
+        data = {"id": 2}
 
         res = self.client.delete("/api/v1/token", headers=headers, data=data)
         data = json.loads(res.data.decode("utf-8"))
@@ -164,9 +154,7 @@ class TokenDeleteTest(FlaskTestCase):
             "Authorization": "Bearer {}".format(add_token("admin", "desc")),
         }
 
-        data = {
-            "id": 1
-        }
+        data = {"id": 1}
 
         res = self.client.delete("/api/v1/token", headers=headers, data=data)
         data = json.loads(res.data.decode("utf-8"))

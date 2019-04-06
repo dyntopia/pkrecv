@@ -63,7 +63,7 @@ class ServerGetTest(FlaskTestCase):
         }
 
         filters = {
-            "id": "2"
+            "id": "2",
         }
 
         add_server(ip="1", port=1, public_key="ssh-rsa ... c", token_id=1)
@@ -88,7 +88,7 @@ class ServerGetTest(FlaskTestCase):
         }
 
         filters = {
-            "ip": "2"
+            "ip": "2",
         }
 
         add_server(ip="1", port=1, public_key="ssh-rsa ... x", token_id=1)
@@ -113,7 +113,7 @@ class ServerGetTest(FlaskTestCase):
         }
 
         filters = {
-            "key_type": "ssh-ed25519"
+            "key_type": "ssh-ed25519",
         }
 
         add_server(ip="1", port=1, public_key="ssh-rsa ...", token_id=1)
@@ -139,7 +139,7 @@ class ServerGetTest(FlaskTestCase):
 
         filters = {
             "ip": "3",
-            "key_type": "ssh-ed25519"
+            "key_type": "ssh-ed25519",
         }
 
         add_server(ip="1", port=1, public_key="ssh-rsa ...", token_id=1)
@@ -191,7 +191,7 @@ class ServerPostTest(FlaskTestCase):
         }
 
         data = {
-            "public_key": ""
+            "public_key": "",
         }
 
         res = self.client.post("/api/v1/server", headers=headers, data=data)
@@ -205,7 +205,7 @@ class ServerPostTest(FlaskTestCase):
         }
 
         data = {
-            "public_key": "ssh-rsa data comment"
+            "public_key": "ssh-rsa data comment",
         }
 
         res = self.client.post("/api/v1/server", headers=headers, data=data)
@@ -225,7 +225,7 @@ class ServerPostTest(FlaskTestCase):
         }
 
         data = {
-            "public_key": "ecdsa-sha2-nistp384 data1234 comment321"
+            "public_key": "ecdsa-sha2-nistp384 data1234 comment321",
         }
 
         res = self.client.post("/api/v1/server", headers=headers, data=data)
@@ -252,7 +252,7 @@ class ServerDeleteTest(FlaskTestCase):
         }
 
         data = {
-            "id": 1
+            "id": 1,
         }
 
         add_server("10.0.0.1", 11, "ssh-rsa data", 1)
@@ -268,7 +268,7 @@ class ServerDeleteTest(FlaskTestCase):
         }
 
         data = {
-            "id": 1
+            "id": 1,
         }
 
         add_server("10.0.0.1", 11, "ssh-rsa data", 1)
@@ -294,7 +294,7 @@ class ServerDeleteTest(FlaskTestCase):
         }
 
         data = {
-            "id": 2
+            "id": 2,
         }
 
         add_server("10.0.0.1", 11, "ssh-rsa data", 1)
@@ -312,7 +312,7 @@ class ServerDeleteTest(FlaskTestCase):
         }
 
         data = {
-            "id": 1
+            "id": 1,
         }
 
         add_server("10.0.0.1", 11, "ssh-rsa data", 1)

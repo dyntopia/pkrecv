@@ -33,7 +33,7 @@ class Server(Model):
             "ecdsa-sha2-nistp521",
             "ssh-ed25519",
             "ssh-dss",
-            "ssh-rsa"
+            "ssh-rsa",
         ]
         if key_type not in key_types:
             raise ServerError("{} is not a valid key type".format(key_type))
@@ -46,6 +46,7 @@ class Server(Model):
         except binascii.Error:
             raise ServerError("{} is not a valid key".format(key_data))
         return key_data
+
     # pylint: enable=no-self-use
 
 
@@ -61,15 +62,15 @@ def add_server(ip: str, port: int, public_key: str, token_id: int) -> None:
     Add a server.
     """
     key_type, key_data, key_comment = split_key(public_key)
-
-    db.session.add(Server(
+    server = Server(
         ip=ip,
         port=port,
         key_type=key_type,
         key_data=key_data,
         key_comment=key_comment,
-        token_id=token_id
-    ))
+        token_id=token_id,
+    )
+    db.session.add(server)
     db.session.commit()
 
 

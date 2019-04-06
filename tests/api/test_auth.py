@@ -52,7 +52,7 @@ class VerifyTokenTest(FlaskTestCase):
         second = add_token("server", "desc2")
         add_token("none", "desc3")
 
-        invalid = first[:int(len(first)/2)] + second[int(len(second)/2):]
+        invalid = first[:int(len(first) / 2)] + second[int(len(second) / 2):]
         self.assertFalse(verify_token(invalid))
         self.assertEqual(g.get("token"), None)
 
@@ -143,25 +143,25 @@ class RoleRequiredTest(FlaskTestCase):
 
     @staticmethod
     @role_required("admin")
-    def require_admin() -> None:
+    def require_admin() -> Response:
         return Response(status=200)
 
     @staticmethod
     @role_required("server")
-    def require_server() -> None:
+    def require_server() -> Response:
         return Response(status=200)
 
     @staticmethod
     @role_required("none")
-    def require_none() -> None:
+    def require_none() -> Response:
         return Response(status=200)
 
     @staticmethod
     @role_required("admin", "server")
-    def require_admin_or_server() -> None:
+    def require_admin_or_server() -> Response:
         return Response(status=200)
 
     @staticmethod
     @role_required("none", "server")
-    def require_none_or_server() -> None:
+    def require_none_or_server() -> Response:
         return Response(status=200)

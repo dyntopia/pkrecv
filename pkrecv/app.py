@@ -14,9 +14,10 @@ def init_app(options: Dict[str, Any]) -> Flask:
     """
     Initialize flask.
     """
+    opts = {k.upper(): v for k, v in options.items()}
     app = Flask(__name__)
-    app.app_context().push()
-    app.config.from_mapping({k.upper(): v for k, v in options.items()})
+    app.app_context().push()  # type: ignore
+    app.config.from_mapping(opts)  # type: ignore
 
     init_api(app)
 

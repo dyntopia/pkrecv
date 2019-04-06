@@ -7,7 +7,5 @@ import pkrecv
 setuptools.setup(
     name="pkrecv",
     version=pkrecv.__version__,
-    entry_points={
-        "console_scripts": ["pkrecv = pkrecv.__main__:main"]
-    }
+    entry_points={"console_scripts": ["pkrecv = pkrecv.__main__:main"]}
 )

@@ -1,6 +1,6 @@
 import configparser
 import os
-from typing import Any, Callable, List, Sequence, Union
+from typing import Any, Callable, List, Optional, Sequence, Union
 
 from munch import Munch
 
@@ -13,9 +13,11 @@ class Config(configparser.ConfigParser):
     def __init__(self) -> None:
         super().__init__(dict_type=Munch)
 
-    def read(self,
-             filenames: Union[str, Sequence[str]],
-             encoding: str=None) -> List[str]:
+    def read(  # type: ignore
+            self,
+            filenames: Union[str, Sequence[str]],
+            encoding: Optional[str] = None
+    ) -> List[str]:
         """
         Read one or more configuration files.
         """
@@ -48,9 +50,7 @@ class Config(configparser.ConfigParser):
         return result
 
     @staticmethod
-    def _convert(function: Callable,
-                 section: str,
-                 option: str) -> Union[bool, float, int, str, None]:
+    def _convert(function: Callable, section: str, option: str) -> Any:
         """
         Use the given function to convert an option in a section.
         """

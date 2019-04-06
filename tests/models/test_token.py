@@ -9,14 +9,14 @@ from pkrecv.models.token import (
     delete_token,
     generate_token,
     get_tokens,
-    sha256
+    sha256,
 )
 
 from ..helpers import FlaskTestCase
 
 
 class AddTokenTest(FlaskTestCase):
-    @patch("pkrecv.models.token.generate_token")  # type: ignore
+    @patch("pkrecv.models.token.generate_token")
     def test_sha256(self, mock: MagicMock) -> None:
         data = b"abcd"
         sha256sum = sha256(data)

@@ -15,18 +15,23 @@ def role_required(*roles: str) -> Callable:
     """
     Authorize a token.
     """
-    def decorator(f: Callable) -> Callable:
+
+    def decorator(f: Callable[..., Union[Dict, Response]]) -> Callable:
         @functools.wraps(f)
         def wrapper(*args: Any, **kwargs: Any) -> Union[Dict, Response]:
             token = g.get("token")
             if token and token.role in roles:
                 return f(*args, **kwargs)
             return Response(
-                response=json.dumps({"message": "Permission denied"}),
+                response=json.dumps({
+                    "message": "Permission denied"
+                }),
                 status=401,
                 content_type="application/json"
             )
+
         return wrapper
+
     return decorator
 
 

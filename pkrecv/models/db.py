@@ -1,7 +1,6 @@
 import datetime
 import functools
 import sqlite3
-
 from typing import Any, List, Optional, Union
 
 from flask import Flask
@@ -30,7 +29,7 @@ class Model(db.Model):  # type: ignore
         """
         return self._to_dict()
 
-    def _to_dict(self, exclude: Optional[List]=None) -> Munch:
+    def _to_dict(self, exclude: Optional[List] = None) -> Munch:
         """
         Create a dict with all columns except for those in `exclude`.
         """
@@ -39,7 +38,8 @@ class Model(db.Model):  # type: ignore
 
         return Munch({
             c.key: self._convert_value(self.__dict__[c.key])
-            for c in self.__table__.columns if c.key not in exclude
+            for c in self.__table__.columns
+            if c.key not in exclude
         })
 
     @staticmethod
@@ -67,7 +67,7 @@ def set_sqlite3_pragma(dbapi_connection: Any, _: _ConnectionRecord) -> None:
     if isinstance(dbapi_connection, sqlite3.Connection):
         cursor = dbapi_connection.cursor()
         cursor.execute("PRAGMA foreign_keys=ON")
-        cursor.close()  # type: ignore
+        cursor.close()
 
 
 def init_db(app: Flask) -> None:

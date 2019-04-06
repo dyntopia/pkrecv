@@ -17,29 +17,31 @@ class CliTest(TestCase):
     def tearDown(self) -> None:
         self.config.close()
 
-    @patch("pkrecv.config.Config.read")  # type: ignore
+    @patch("pkrecv.config.Config.read")
     def test_config_error(self, mock: MagicMock) -> None:
         mock.side_effect = config.ConfigError("asdf")
 
-        runner = CliRunner()
-        result = runner.invoke(cli.cli, [
+        args = [
             "--config-file",
             self.config.name,
-            "add-token"
-        ])
+            "add-token",
+        ]
+        runner = CliRunner()
+        result = runner.invoke(cli.cli, args)
         self.assertEqual(result.output, "ERROR: asdf\n")
         self.assertEqual(result.exit_code, 1)
 
-    @patch("pkrecv.app.init_app")  # type: ignore
+    @patch("pkrecv.app.init_app")
     def test_app_error(self, mock: MagicMock) -> None:
         mock.side_effect = app.AppError("xyz")
 
-        runner = CliRunner()
-        result = runner.invoke(cli.cli, [
+        args = [
             "--config-file",
             self.config.name,
-            "add-token"
-        ])
+            "add-token",
+        ]
+        runner = CliRunner()
+        result = runner.invoke(cli.cli, args)
         self.assertEqual(result.output, "ERROR: xyz\n")
         self.assertEqual(result.exit_code, 1)
 
@@ -49,43 +51,47 @@ class AddTokenTest(TestCase):
         super().setUp()
 
         self.config = tempfile.NamedTemporaryFile()
-        self.config.write(b"""
-        [flask]
-        sqlalchemy_database_uri = sqlite:///:memory:
-        sqlalchemy_track_modifications = false
-        """)
+        self.config.write(
+            b"""
+            [flask]
+            sqlalchemy_database_uri = sqlite:///:memory:
+            sqlalchemy_track_modifications = false
+            """
+        )
         self.config.flush()
 
     def tearDown(self) -> None:
         self.config.close()
 
-    @patch("pkrecv.models.token.add_token")  # type: ignore
+    @patch("pkrecv.models.token.add_token")
     def test_token_error(self, mock: MagicMock) -> None:
         mock.side_effect = token.TokenError("xyz")
 
-        runner = CliRunner()
-        result = runner.invoke(cli.cli, [
+        args = [
             "--config-file",
             self.config.name,
             "add-token",
             "--role",
-            "admin"
-        ])
+            "admin",
+        ]
+        runner = CliRunner()
+        result = runner.invoke(cli.cli, args)
         self.assertEqual(result.output, "ERROR: xyz\n")
         self.assertEqual(result.exit_code, 1)
 
-    @patch("pkrecv.models.token.add_token")  # type: ignore
+    @patch("pkrecv.models.token.add_token")
     def test_token_success(self, mock: MagicMock) -> None:
         mock.return_value = "abcd"
 
-        runner = CliRunner()
-        result = runner.invoke(cli.cli, [
+        args = [
             "--config-file",
             self.config.name,
             "add-token",
             "--role",
-            "admin"
-        ])
+            "admin",
+        ]
+        runner = CliRunner()
+        result = runner.invoke(cli.cli, args)
         self.assertEqual(result.output, "Token: abcd\n")
         self.assertEqual(result.exit_code, 0)
 
@@ -95,24 +101,27 @@ class ServeTest(TestCase):
         super().setUp()
 
         self.config = tempfile.NamedTemporaryFile()
-        self.config.write(b"""
-        [flask]
-        sqlalchemy_database_uri = sqlite:///:memory:
-        sqlalchemy_track_modifications = false
-        """)
+        self.config.write(
+            b"""
+            [flask]
+            sqlalchemy_database_uri = sqlite:///:memory:
+            sqlalchemy_track_modifications = false
+            """
+        )
         self.config.flush()
 
     def tearDown(self) -> None:
         self.config.close()
 
-    @patch("pkrecv.wsgi.Gunicorn.run")  # type: ignore
+    @patch("pkrecv.wsgi.Gunicorn.run")
     def test_serve(self, mock: MagicMock) -> None:
-        runner = CliRunner()
-        result = runner.invoke(cli.cli, [
+        args = [
             "--config-file",
             self.config.name,
-            "serve"
-        ])
+            "serve",
+        ]
+        runner = CliRunner()
+        result = runner.invoke(cli.cli, args)
 
         self.assertEqual(len(mock.mock_calls), 1)
         self.assertEqual(result.exit_code, 0)

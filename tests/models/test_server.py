@@ -5,7 +5,7 @@ from pkrecv.models.server import (
     add_server,
     delete_server,
     get_servers,
-    split_key
+    split_key,
 )
 from pkrecv.models.token import add_token
 
