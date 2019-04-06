@@ -27,5 +27,6 @@ setuptools.setup(
     author_email="hji@dyntopia.com",
     python_requires=">=3.5",
     install_requires=list(get_requirements("requirements/requirements.txt")),
+    packages=["pkrecv"],
     entry_points={"console_scripts": ["pkrecv = pkrecv.__main__:main"]}
 )
