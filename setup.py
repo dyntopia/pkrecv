@@ -23,6 +23,8 @@ def get_requirements(filename: str) -> Iterator[str]:
 setuptools.setup(
     name="pkrecv",
     version=pkrecv.__version__,
+    author="Hans Jerry Illikainen",
+    author_email="hji@dyntopia.com",
     install_requires=list(get_requirements("requirements/requirements.txt")),
     entry_points={"console_scripts": ["pkrecv = pkrecv.__main__:main"]}
 )
